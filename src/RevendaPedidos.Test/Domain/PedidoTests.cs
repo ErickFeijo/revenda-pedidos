@@ -9,7 +9,7 @@ namespace RevendaPedidos.Tests.Domain
     public class PedidoTests
     {
         [Fact]
-        public void Deve_Criar_Pedido_Valido()
+        public void CriarPedido_DeveSerValido()
         {
             var pedido = CriarPedidoValido();
 
@@ -20,7 +20,7 @@ namespace RevendaPedidos.Tests.Domain
         }
 
         [Fact]
-        public void Nao_Deve_Criar_Pedido_Com_RevendaId_Vazio()
+        public void CriarPedido_ComRevendaIdVazio_DeveLancarExcecao()
         {
             var cliente = new ClienteFinal("João", null);
             var itens = new List<ItemPedido>
@@ -33,7 +33,7 @@ namespace RevendaPedidos.Tests.Domain
         }
 
         [Fact]
-        public void Nao_Deve_Criar_Pedido_Sem_ClienteFinal()
+        public void CriarPedido_SemClienteFinal_DeveLancarExcecao()
         {
             var itens = new List<ItemPedido>
             {
@@ -45,7 +45,7 @@ namespace RevendaPedidos.Tests.Domain
         }
 
         [Fact]
-        public void Nao_Deve_Criar_Pedido_Sem_Itens()
+        public void CriarPedido_SemItens_DeveLancarExcecao()
         {
             var cliente = new ClienteFinal("João", null);
 
@@ -57,7 +57,7 @@ namespace RevendaPedidos.Tests.Domain
         }
 
         [Fact]
-        public void Deve_Adicionar_Item_Valido()
+        public void AdicionarItem_Valido_DeveAdicionar()
         {
             var pedido = CriarPedidoValido();
             var novoItem = new ItemPedido(Guid.NewGuid(), "Produto 2", 5m, 1);
@@ -67,7 +67,7 @@ namespace RevendaPedidos.Tests.Domain
         }
 
         [Fact]
-        public void Nao_Deve_Adicionar_Item_Repetido()
+        public void AdicionarItem_Repetido_DeveLancarExcecao()
         {
             var pedido = CriarPedidoValido();
             var item = pedido.Itens.First();
@@ -79,7 +79,7 @@ namespace RevendaPedidos.Tests.Domain
         }
 
         [Fact]
-        public void Deve_Remover_Item()
+        public void RemoverItem_Existente_DeveRemover()
         {
             var pedido = CriarPedidoValido();
             var produtoId = pedido.Itens.First().ProdutoId;
@@ -90,7 +90,7 @@ namespace RevendaPedidos.Tests.Domain
         }
 
         [Fact]
-        public void Nao_Deve_Remover_Item_Inexistente()
+        public void RemoverItem_Inexistente_DeveLancarExcecao()
         {
             var pedido = CriarPedidoValido();
 
@@ -101,7 +101,7 @@ namespace RevendaPedidos.Tests.Domain
         }
 
         [Fact]
-        public void Deve_Alterar_Status()
+        public void AlterarStatus_Valido_DeveAtualizar()
         {
             var pedido = CriarPedidoValido();
             pedido.AlterarStatus(StatusPedido.Finalizado);
@@ -110,7 +110,7 @@ namespace RevendaPedidos.Tests.Domain
         }
 
         [Fact]
-        public void Nao_Deve_Alterar_Status_De_Pedido_Finalizado()
+        public void AlterarStatus_PedidoFinalizado_DeveLancarExcecao()
         {
             var pedido = CriarPedidoValido();
             pedido.AlterarStatus(StatusPedido.Finalizado);

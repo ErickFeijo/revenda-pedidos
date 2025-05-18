@@ -8,7 +8,7 @@ namespace RevendaPedidos.Tests.Domain
     public class RevendaTests
     {
         [Fact]
-        public void Deve_Criar_Revenda_Valida()
+        public void CriarRevenda_DeveSerValido()
         {
             var revenda = new Revenda("11222333000181", "Empresa Ltda", "Empresa", "teste@email.com");
 
@@ -21,7 +21,7 @@ namespace RevendaPedidos.Tests.Domain
         [Theory]
         [InlineData("")]
         [InlineData("123")]
-        public void Nao_Deve_Criar_Revenda_Com_Cnpj_Invalido(string cnpjInvalido)
+        public void CriarRevenda_ComCnpjInvalido_DeveLancarExcecao(string cnpjInvalido)
         {
             Assert.Throws<ArgumentException>(() =>
                 new Revenda(cnpjInvalido, "Empresa Ltda", "Empresa", "teste@email.com"));
@@ -30,14 +30,14 @@ namespace RevendaPedidos.Tests.Domain
         [Theory]
         [InlineData("")]
         [InlineData("email_invalido")]
-        public void Nao_Deve_Criar_Revenda_Com_Email_Invalido(string email)
+        public void CriarRevenda_ComEmailInvalido_DeveLancarExcecao(string email)
         {
             Assert.Throws<ArgumentException>(() =>
                 new Revenda("11222333000181", "Empresa Ltda", "Empresa", email));
         }
 
         [Fact]
-        public void Deve_Adicionar_Telefone_Valido()
+        public void AdicionarTelefone_Valido_DeveAdicionar()
         {
             var revenda = CriarRevendaValida();
             revenda.AdicionarTelefone("51999999999");
@@ -46,7 +46,7 @@ namespace RevendaPedidos.Tests.Domain
         }
 
         [Fact]
-        public void Nao_Deve_Adicionar_Telefone_Repetido()
+        public void AdicionarTelefone_Repetido_DeveLancarExcecao()
         {
             var revenda = CriarRevendaValida();
             revenda.AdicionarTelefone("51999999999");
@@ -58,7 +58,7 @@ namespace RevendaPedidos.Tests.Domain
         }
 
         [Fact]
-        public void Deve_Adicionar_Contato()
+        public void AdicionarContato_DeveAdicionar()
         {
             var revenda = CriarRevendaValida();
             var contato = new Contato("João", true);
@@ -70,7 +70,7 @@ namespace RevendaPedidos.Tests.Domain
         }
 
         [Fact]
-        public void Nao_Deve_Ter_Mais_De_Um_Contato_Principal()
+        public void AdicionarContato_MaisDeUmPrincipal_DeveLancarExcecao()
         {
             var revenda = CriarRevendaValida();
             revenda.AdicionarContato(new Contato("João", true));
@@ -82,7 +82,7 @@ namespace RevendaPedidos.Tests.Domain
         }
 
         [Fact]
-        public void Deve_Adicionar_Endereco()
+        public void AdicionarEndereco_DeveAdicionar()
         {
             var revenda = CriarRevendaValida();
             var endereco = new EnderecoEntrega("Loja 1", "Rua 1", "123", "Casa", "Porto Alegre", "RS", "90000-000");
@@ -93,7 +93,7 @@ namespace RevendaPedidos.Tests.Domain
         }
 
         [Fact]
-        public void Nao_Deve_Remover_Ultimo_Endereco()
+        public void RemoverUltimoEndereco_DeveLancarExcecao()
         {
             var revenda = CriarRevendaValida();
             var endereco = new EnderecoEntrega("Loja 1", "Rua 1", "123", "Casa", "Porto Alegre", "RS", "90000-000");

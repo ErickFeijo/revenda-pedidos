@@ -22,10 +22,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Infra\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\RevendaPedidos.Application.Impl\RevendaPedidos.Application.Impl.csproj" />
     <ProjectReference Include="..\RevendaPedidos.Domain\RevendaPedidos.Domain.csproj" />
     <ProjectReference Include="..\RevendaPedidos.Infrastructure\RevendaPedidos.Infrastructure.csproj" />

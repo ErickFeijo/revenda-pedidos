@@ -1,7 +1,11 @@
-﻿using Moq;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using Moq;
 using RevendaPedidos.Application.Impl.Services;
 using RevendaPedidos.Domain.Entities;
 using RevendaPedidos.Domain.Interfaces;
+using Xunit;
 
 namespace RevendaPedidos.Tests.Application
 {
@@ -17,21 +21,17 @@ namespace RevendaPedidos.Tests.Application
         }
 
         [Fact]
-        public async Task MarcarPedidosParaIntegracao_DeveAlterarStatusQuandoValido()
+        public async Task MarcarPedidosParaIntegracao_DeveAlterarStatus_QuandoValido()
         {
-            // Arrange
             var pedidoId = Guid.NewGuid();
-            var pedido = GetPedido(StatusPedido.Novo, 1000);
-            pedido.GetType().GetProperty("Id").SetValue(pedido, pedidoId); // Force setting private setter
+            var pedido = CriarPedido(StatusPedido.Novo, 1000);
+            pedido.GetType().GetProperty("Id")!.SetValue(pedido, pedidoId);
             _repositoryMock.Setup(r => r.ListarPorIdsAsync(It.IsAny<Guid>(), It.IsAny<List<Guid>>()))
                            .ReturnsAsync(new List<Pedido> { pedido });
-            _repositoryMock.Setup(r => r.AtualizarAsync(It.IsAny<Pedido>()))
-                           .Returns(Task.CompletedTask);
+            _repositoryMock.Setup(r => r.AtualizarAsync(It.IsAny<Pedido>())).Returns(Task.CompletedTask);
 
-            // Act
             var pedidos = await _service.EmitirPedidosParaFornecedorAsync(Guid.NewGuid(), new List<Guid> { pedidoId });
 
-            // Assert
             Assert.Single(pedidos);
             Assert.Equal(StatusPedido.AguardandoIntegracao, pedido.Status);
             _repositoryMock.Verify(r => r.AtualizarAsync(It.Is<Pedido>(p => p.Status == StatusPedido.AguardandoIntegracao)), Times.Once);
@@ -51,7 +51,7 @@ namespace RevendaPedidos.Tests.Application
         [Fact]
         public async Task MarcarPedidosParaIntegracao_DeveLancarExcecao_QuandoPedidoNaoPodeEmitir()
         {
-            var pedido = GetPedido(StatusPedido.Finalizado, 1000);
+            var pedido = CriarPedido(StatusPedido.Finalizado, 1000);
             _repositoryMock.Setup(r => r.ListarPorIdsAsync(It.IsAny<Guid>(), It.IsAny<List<Guid>>()))
                 .ReturnsAsync(new List<Pedido> { pedido });
 
@@ -63,7 +63,7 @@ namespace RevendaPedidos.Tests.Application
         [Fact]
         public async Task MarcarPedidosParaIntegracao_DeveLancarExcecao_QuandoSomaItensMenorQueMil()
         {
-            var pedido = GetPedido(StatusPedido.Novo, 500);
+            var pedido = CriarPedido(StatusPedido.Novo, 500);
             _repositoryMock.Setup(r => r.ListarPorIdsAsync(It.IsAny<Guid>(), It.IsAny<List<Guid>>()))
                 .ReturnsAsync(new List<Pedido> { pedido });
 
@@ -72,8 +72,7 @@ namespace RevendaPedidos.Tests.Application
             );
         }
 
-        // Helper para criar pedido com itens
-        private Pedido GetPedido(StatusPedido status, int quantidade)
+        private Pedido CriarPedido(StatusPedido status, int quantidade)
         {
             var cliente = new ClienteFinal("Cliente X", "123456789");
             var itens = new List<ItemPedido> { new ItemPedido(Guid.NewGuid(), "Bebida Y", 7, quantidade) };
