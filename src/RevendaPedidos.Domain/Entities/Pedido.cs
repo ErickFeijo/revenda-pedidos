@@ -6,9 +6,10 @@ namespace RevendaPedidos.Domain.Entities
 {
     public enum StatusPedido
     {
-        Pendente,
-        EmProgresso,
+        Novo,
+        AguardandoIntegracao,
         Finalizado,
+        FalhaIntegracao,
         Cancelado
     }
 
@@ -38,7 +39,7 @@ namespace RevendaPedidos.Domain.Entities
             ClienteFinal = new ClienteFinal(clienteFinal.Nome, clienteFinal.Documento);
             DataCriacao = DateTime.Now;
             _itens.AddRange(itens);
-            Status = StatusPedido.Pendente;
+            Status = StatusPedido.Novo;
         }
 
         public void AdicionarItem(ItemPedido item)
@@ -65,5 +66,12 @@ namespace RevendaPedidos.Domain.Entities
                 throw new InvalidOperationException("Não é possível alterar um pedido finalizado.");
             Status = novoStatus;
         }
+
+        public bool PodeEmitir()
+        {
+            return (Status == StatusPedido.Novo || Status == StatusPedido.FalhaIntegracao)
+                && _itens.Any();
+        }
+
     }
 }

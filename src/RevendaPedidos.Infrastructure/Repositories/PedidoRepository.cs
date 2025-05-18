@@ -35,5 +35,18 @@ namespace RevendaPedidos.Infra.Repositories
                 .FirstOrDefaultAsync(p => p.RevendaId == revendaId && p.Id == pedidoId);
         }
 
+        public async Task<List<Pedido>> ListarPorIdsAsync(Guid revendaId, List<Guid> pedidoIds)
+        {
+            return await _context.Pedidos
+                .Include(p => p.Itens)
+                .Where(p => p.RevendaId == revendaId && pedidoIds.Contains(p.Id))
+                .ToListAsync();
+        }
+
+        public async Task AtualizarAsync(Pedido pedido)
+        {
+            _context.Pedidos.Update(pedido);
+            await _context.SaveChangesAsync();
+        }
     }
 }

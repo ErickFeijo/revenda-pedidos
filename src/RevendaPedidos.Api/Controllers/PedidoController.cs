@@ -45,4 +45,30 @@ public class PedidoController : ControllerBase
         return Ok(pedido);
     }
 
+    [HttpPost("emitir")]
+    public async Task<IActionResult> EmitirPedidosParaFornecedor(
+        Guid revendaId,
+        [FromBody] EmitirPedidoRequest request)
+    {
+        if (request.PedidoIds == null || !request.PedidoIds.Any())
+            return BadRequest("Deve informar ao menos um pedido.");
+
+        try
+        {
+            var pedidosAtualizados = await _pedidoService.EmitirPedidosParaFornecedorAsync(revendaId, request.PedidoIds);
+
+            return Ok(new
+            {
+                PedidosEmitidos = pedidosAtualizados
+            });
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, "Ocorreu um erro inesperado ao emitir os pedidos: " + ex.Message);
+        }
+    }
 }

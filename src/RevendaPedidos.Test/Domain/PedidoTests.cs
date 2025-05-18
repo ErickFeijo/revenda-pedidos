@@ -16,7 +16,7 @@ namespace RevendaPedidos.Tests.Domain
             Assert.NotEqual(Guid.Empty, pedido.Id);
             Assert.Equal("João", pedido.ClienteFinal.Nome);
             Assert.Single(pedido.Itens);
-            Assert.Equal(StatusPedido.Pendente, pedido.Status);
+            Assert.Equal(StatusPedido.Novo, pedido.Status);
         }
 
         [Fact]
@@ -104,9 +104,9 @@ namespace RevendaPedidos.Tests.Domain
         public void Deve_Alterar_Status()
         {
             var pedido = CriarPedidoValido();
-            pedido.AlterarStatus(StatusPedido.EmProgresso);
+            pedido.AlterarStatus(StatusPedido.Finalizado);
 
-            Assert.Equal(StatusPedido.EmProgresso, pedido.Status);
+            Assert.Equal(StatusPedido.Finalizado, pedido.Status);
         }
 
         [Fact]
@@ -116,7 +116,7 @@ namespace RevendaPedidos.Tests.Domain
             pedido.AlterarStatus(StatusPedido.Finalizado);
 
             var ex = Assert.Throws<InvalidOperationException>(() =>
-                pedido.AlterarStatus(StatusPedido.EmProgresso));
+                pedido.AlterarStatus(StatusPedido.Novo));
 
             Assert.Equal("Não é possível alterar um pedido finalizado.", ex.Message);
         }

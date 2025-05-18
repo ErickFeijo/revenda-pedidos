@@ -7,10 +7,6 @@ namespace RevendaPedidos.Application.Mappers
     {
         public static Pedido Map(this PedidoDTO dto)
         {
-            var status = Enum.TryParse<StatusPedido>(dto.Status, true, out var statusPedido)
-                ? statusPedido
-                : StatusPedido.Pendente;
-
             var itens = dto.Itens?.Select(i => new ItemPedido(
                 i.ProdutoId,
                 i.ProdutoNome,
@@ -18,17 +14,17 @@ namespace RevendaPedidos.Application.Mappers
                 i.Quantidade
             )).ToList() ?? new List<ItemPedido>();
 
-            var clienteFinal = !string.IsNullOrWhiteSpace(dto.ClienteFinal.Nome)
-                ? new ClienteFinal(dto.ClienteFinal.Nome, dto.ClienteFinal.Documento)
-                : throw new ArgumentException("Nome do cliente final é obrigatório.");
-
             var pedido = new Pedido(
                 dto.RevendaId,
-                clienteFinal,
+                new ClienteFinal(dto.ClienteFinal.Nome, dto.ClienteFinal.Documento),
                 itens
             );
 
-            if (status != StatusPedido.Pendente)
+            var status = Enum.TryParse<StatusPedido>(dto.Status, true, out var statusPedido)
+                ? statusPedido
+                : StatusPedido.Novo;
+
+            if (status != StatusPedido.Novo)
                 pedido.AlterarStatus(status);
 
             return pedido;
