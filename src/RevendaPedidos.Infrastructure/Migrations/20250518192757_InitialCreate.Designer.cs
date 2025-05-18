@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace RevendaPedidos.Infrastructure.Migrations
 {
     [DbContext(typeof(RevendaPedidosDbContext))]
-    [Migration("20250518040151_InitialCreate")]
+    [Migration("20250518192757_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -23,6 +23,56 @@ namespace RevendaPedidos.Infrastructure.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+
+            modelBuilder.Entity("RevendaPedidos.Domain.Entities.ItemPedido", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("PedidoId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<decimal>("PrecoUnitario")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<Guid>("ProdutoId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ProdutoNome")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Quantidade")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PedidoId");
+
+                    b.ToTable("ItensPedido");
+                });
+
+            modelBuilder.Entity("RevendaPedidos.Domain.Entities.Pedido", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("DataCriacao")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("RevendaId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Pedidos");
+                });
 
             modelBuilder.Entity("RevendaPedidos.Domain.Entities.Revenda", b =>
                 {
@@ -49,6 +99,40 @@ namespace RevendaPedidos.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Revendas");
+                });
+
+            modelBuilder.Entity("RevendaPedidos.Domain.Entities.ItemPedido", b =>
+                {
+                    b.HasOne("RevendaPedidos.Domain.Entities.Pedido", null)
+                        .WithMany("Itens")
+                        .HasForeignKey("PedidoId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("RevendaPedidos.Domain.Entities.Pedido", b =>
+                {
+                    b.OwnsOne("RevendaPedidos.Domain.Entities.ClienteFinal", "ClienteFinal", b1 =>
+                        {
+                            b1.Property<Guid>("PedidoId")
+                                .HasColumnType("uniqueidentifier");
+
+                            b1.Property<string>("Documento")
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.Property<string>("Nome")
+                                .IsRequired()
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.HasKey("PedidoId");
+
+                            b1.ToTable("Pedidos");
+
+                            b1.WithOwner()
+                                .HasForeignKey("PedidoId");
+                        });
+
+                    b.Navigation("ClienteFinal")
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("RevendaPedidos.Domain.Entities.Revenda", b =>
@@ -133,6 +217,11 @@ namespace RevendaPedidos.Infrastructure.Migrations
                     b.Navigation("EnderecosEntrega");
 
                     b.Navigation("Telefones");
+                });
+
+            modelBuilder.Entity("RevendaPedidos.Domain.Entities.Pedido", b =>
+                {
+                    b.Navigation("Itens");
                 });
 #pragma warning restore 612, 618
         }

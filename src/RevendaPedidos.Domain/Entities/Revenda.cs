@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http.Headers;
 using RevendaPedidos.Shared.Utils;
 
 namespace RevendaPedidos.Domain.Entities
@@ -10,89 +9,52 @@ namespace RevendaPedidos.Domain.Entities
     {
         public Guid Id { get; private set; } = Guid.NewGuid();
 
-        private string _cnpj = string.Empty;
-        private string _razaoSocial = string.Empty;
-        private string _nomeFantasia = string.Empty;
-        private string _email = string.Empty;
+        public string Cnpj { get; private set; } = string.Empty;
+        public string RazaoSocial { get; private set; } = string.Empty;
+        public string NomeFantasia { get; private set; } = string.Empty;
+        public string Email { get; private set; } = string.Empty;
 
-        private readonly List<Telefone> _telefones = new();
-        private readonly List<Contato> _contatos = new();
-        private readonly List<EnderecoEntrega> _enderecosEntrega = new();
-
-        public Revenda(string cnpj, string razaoSocial, string nomeFantasia, string email)
-        {
-            Cnpj = cnpj;
-            RazaoSocial = razaoSocial;
-            NomeFantasia = nomeFantasia;
-            Email = email;
-        }
-
-        public void Atualizar(string cnpj, string razaoSocial, string nomeFantasia, string email)
-        {
-            Cnpj = cnpj;
-            RazaoSocial = razaoSocial;
-            NomeFantasia = nomeFantasia;
-            Email = email;
-        }
-
-        public string Cnpj
-        {
-            get => _cnpj;
-            set
-            {
-                if (string.IsNullOrWhiteSpace(value))
-                    throw new ArgumentException("CNPJ é obrigatório.");
-
-                if (!Helpers.ValidarCnpj(value))
-                    throw new ArgumentException("CNPJ inválido.");
-
-                _cnpj = value;
-            }
-        }
-
-        public string RazaoSocial
-        {
-            get => _razaoSocial;
-            set
-            {
-                if (string.IsNullOrWhiteSpace(value))
-                    throw new ArgumentException("Razão Social é obrigatória.");
-
-                _razaoSocial = value.Trim();
-            }
-        }
-
-        public string NomeFantasia
-        {
-            get => _nomeFantasia;
-            set
-            {
-                if (string.IsNullOrWhiteSpace(value))
-                    throw new ArgumentException("Nome Fantasia é obrigatório.");
-
-                _nomeFantasia = value.Trim();
-            }
-        }
-
-        public string Email
-        {
-            get => _email;
-            set
-            {
-                if (string.IsNullOrWhiteSpace(value))
-                    throw new ArgumentException("Email é obrigatório.");
-
-                if (!Helpers.ValidarEmail(value))
-                    throw new ArgumentException("Email inválido.");
-
-                _email = value.Trim();
-            }
-        }
+        private List<Telefone> _telefones { get; set; } = new();
+        private List<Contato> _contatos { get; set; } = new();
+        private List<EnderecoEntrega> _enderecosEntrega { get; set; } = new();
 
         public IReadOnlyList<Telefone> Telefones => _telefones.AsReadOnly();
         public IReadOnlyList<Contato> Contatos => _contatos.AsReadOnly();
         public IReadOnlyList<EnderecoEntrega> EnderecosEntrega => _enderecosEntrega.AsReadOnly();
-        
+
+        public Revenda(string cnpj, string razaoSocial, string nomeFantasia, string email)
+        {
+            Atualizar(cnpj, razaoSocial, nomeFantasia, email);
+        }
+
+        public void Atualizar(string cnpj, string razaoSocial, string nomeFantasia, string email)
+        {
+            if (string.IsNullOrWhiteSpace(cnpj))
+                throw new ArgumentException("CNPJ é obrigatório.");
+
+            if (!Helpers.ValidarCnpj(cnpj))
+                throw new ArgumentException("CNPJ inválido.");
+
+            if (string.IsNullOrWhiteSpace(razaoSocial))
+                throw new ArgumentException("Razão Social é obrigatória.");
+
+            if (string.IsNullOrWhiteSpace(nomeFantasia))
+                throw new ArgumentException("Nome Fantasia é obrigatório.");
+
+            if (string.IsNullOrWhiteSpace(email))
+                throw new ArgumentException("Email é obrigatório.");
+
+            if (!Helpers.ValidarEmail(email))
+                throw new ArgumentException("Email inválido.");
+
+            Cnpj = cnpj.Trim();
+            RazaoSocial = razaoSocial.Trim();
+            NomeFantasia = nomeFantasia.Trim();
+            Email = email.Trim();
+        }
+
+        #region Listas
+
         public void AdicionarTelefone(string telefone)
         {
             if (string.IsNullOrWhiteSpace(telefone))
@@ -144,5 +106,6 @@ namespace RevendaPedidos.Domain.Entities
                 throw new InvalidOperationException("Deve haver pelo menos um endereço de entrega.");
         }
 
+        #endregion
     }
 }

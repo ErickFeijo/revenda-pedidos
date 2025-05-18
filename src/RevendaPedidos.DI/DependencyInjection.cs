@@ -14,9 +14,11 @@ public static class DependencyInjection
     {
         // Application services
         services.AddScoped<IRevendaService, RevendaService>();
+        services.AddScoped<IPedidoService, PedidoService>();
 
         // Infra repositories
         services.AddScoped<IRevendaRepository, RevendaRepository>();
+        services.AddScoped<IPedidoRepository, PedidoRepository>();
 
         // DbContext
         services.AddDbContext<RevendaPedidosDbContext>(options =>
