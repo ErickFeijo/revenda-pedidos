@@ -1,0 +1,30 @@
+services:
+ sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      SA_PASSWORD: "Your_strong_password123"
+      ACCEPT_EULA: "Y"
+    ports:
+      - "1433:1433"
+    networks:
+      - revenda-net
+    volumes:
+      - sqlvolume:/var/opt/mssql
+ 
+ revendapedidos.api:
+    image: ${DOCKER_REGISTRY-}revendapedidosapi
+    build:
+      context: .
+      dockerfile: src/RevendaPedidos.Api/Dockerfile
+    depends_on:
+      - sqlserver
+    ports:
+      - "5000:8080"
+    networks:
+      - revenda-net 
+      
+volumes:
+  sqlvolume:
+
+networks:
+  revenda-net: {}
