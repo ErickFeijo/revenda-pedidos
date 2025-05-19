@@ -25,7 +25,6 @@ public class PedidoIntegracaoService : IPedidoIntegracaoService
         {
             await _integradorFornecedorService.EnviarPedidoAsync(dto);
 
-            // Atualiza status para Finalizado
             if (dto.Id.HasValue)
             {
                 var pedido = await _pedidoRepository.ObterPorIdAsync(dto.RevendaId, dto.Id.Value);
@@ -35,12 +34,11 @@ public class PedidoIntegracaoService : IPedidoIntegracaoService
                     await _pedidoRepository.AtualizarAsync(pedido);
                 }
             }
-
+             
             _logger.LogInformation("Pedido {Id} integrado com sucesso.", dto.Id);
         }
         catch (Exception ex)
         {
-            //TODO: Verificar erro de connecionstring não definida
             _logger.LogWarning(ex, "Erro ao integrar o pedido {Id}", dto.Id);
             throw;
         }
