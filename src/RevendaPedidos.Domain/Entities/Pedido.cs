@@ -19,6 +19,7 @@ namespace RevendaPedidos.Domain.Entities
         public Guid RevendaId { get; private set; }
         public ClienteFinal ClienteFinal { get; private set; }
         public DateTime DataCriacao { get; private set; }
+
         private readonly List<ItemPedido> _itens = new();
         public IReadOnlyCollection<ItemPedido> Itens => _itens.AsReadOnly();
         public StatusPedido Status { get; private set; }

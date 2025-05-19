@@ -1,4 +1,5 @@
 ﻿using FluentValidation.AspNetCore;
+using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using RevendaPedidos.DI;
 
@@ -15,6 +16,18 @@ builder.Services.AddFluentValidationAutoValidation();
 
 builder.Services.AddDbContext<RevendaPedidosDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+builder.Services.AddMassTransit(x =>
+{
+    x.UsingRabbitMq((context, cfg) =>
+    {
+        cfg.Host("rabbitmq", "/", h =>
+        {
+            h.Username("guest");
+            h.Password("guest");
+        });
+    });
+});
 
 var app = builder.Build();
 

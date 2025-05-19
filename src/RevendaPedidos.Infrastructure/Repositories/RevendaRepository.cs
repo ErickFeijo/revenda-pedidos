@@ -22,16 +22,18 @@ public class RevendaRepository : IRevendaRepository
     public async Task<Revenda?> ObterPorIdAsync(Guid id)
     {
         return await _context.Revendas
-            .Include(r => r.Contatos)
-            .Include(r => r.EnderecosEntrega)
+            .Include("_contatos")
+            .Include("_enderecosEntrega")
+            .Include("_telefones")
             .FirstOrDefaultAsync(r => r.Id == id);
     }
 
     public async Task<IEnumerable<Revenda>> ListarTodasAsync()
     {
         return await _context.Revendas
-            .Include(r => r.Contatos)
-            .Include(r => r.EnderecosEntrega)
+            .Include("_contatos")
+            .Include("_enderecosEntrega")
+            .Include("_telefones")
             .ToListAsync();
     }
 

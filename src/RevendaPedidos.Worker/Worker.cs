@@ -1,71 +1,29 @@
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
+using MassTransit;
 using Microsoft.Extensions.Logging;
-using RevendaPedidos.Domain.Entities;
-using RevendaPedidos.Domain.Interfaces;
-using System;
-using System.Linq;
-using System.Threading;
+using RevendaPedidos.Application.DTOs;
+using RevendaPedidos.Application.Interfaces.Services;
 using System.Threading.Tasks;
 
-public class PedidoIntegracaoWorker : BackgroundService
+public class PedidoFilaConsumer : IConsumer<PedidoFilaDto>
 {
-    private readonly IServiceProvider _serviceProvider;
-    private readonly ILogger<PedidoIntegracaoWorker> _logger;
+    private readonly ILogger<PedidoFilaConsumer> _logger;
+    private readonly IPedidoIntegracaoService _pedidoIntegracaoService;
 
-    public PedidoIntegracaoWorker(IServiceProvider serviceProvider, ILogger<PedidoIntegracaoWorker> logger)
+    public PedidoFilaConsumer(
+        ILogger<PedidoFilaConsumer> logger,
+        IPedidoIntegracaoService pedidoIntegracaoService)
     {
-        _serviceProvider = serviceProvider;
         _logger = logger;
+        _pedidoIntegracaoService = pedidoIntegracaoService;
     }
 
-    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    public async Task Consume(ConsumeContext<PedidoFilaDto> context)
     {
-        _logger.LogInformation("Worker started");
+        _logger.LogInformation("Consumo de PedidoFilaDto iniciado. PedidoId={Id}", context.Message.Id);
 
-        while (!stoppingToken.IsCancellationRequested)
-        {
-            try
-            {
-                using (var scope = _serviceProvider.CreateScope())
-                {
-                    //var pedidoRepository = scope.ServiceProvider.GetRequiredService<IPedidoRepository>();
-                    //var integradorService = scope.ServiceProvider.GetRequiredService<IIntegradorAmbevService>();
+        await _pedidoIntegracaoService.ProcessarIntegracaoAsync(context.Message);
 
-                    //// Buscar pedidos "AguardandoIntegracao" (exemplo, ajuste pro seu modelo)
-                    //var pedidos = await pedidoRepository.ListarPorStatusAsync(StatusPedido.AguardandoIntegracao);
-
-                    //foreach (var pedido in pedidos)
-                    //{
-                    //    try
-                    //    {
-                    //        // Envia para "AMBEV"
-                    //        await integradorService.EnviarPedidoAsync(pedido);
-
-                    //        // Atualiza o status
-                    //        pedido.AlterarStatus(StatusPedido.Finalizado);
-                    //        await pedidoRepository.AtualizarAsync(pedido);
-
-                            _logger.LogInformation("Pedido {PedidoId} integrado com sucesso");
-                    //    }
-                    //    catch (Exception ex)
-                    //    {
-                    //        _logger.LogError(ex, "Falha ao integrar pedido {PedidoId}", pedido.Id);
-
-                    //        // Marca como falha de integração
-                    //        pedido.AlterarStatus(StatusPedido.FalhaIntegracao);
-                    //        await pedidoRepository.AtualizarAsync(pedido);
-                    //    }
-                    //}
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Erro geral no processamento do worker");
-            }
-
-            // Aguarda X segundos entre ciclos
-            await Task.Delay(TimeSpan.FromSeconds(30), stoppingToken);
-        }
+        _logger.LogInformation("Consumo de PedidoFilaDto finalizado. PedidoId={Id}", context.Message.Id);
     }
 }
+

@@ -53,5 +53,20 @@ namespace RevendaPedidos.Application.Mappers
                 }).ToList() ?? new List<ItemPedidoDTO>()
             };
         }
+
+        public static PedidoFilaDto MapFila(this Pedido pedido)
+        {
+            return new PedidoFilaDto
+            {
+                Id = pedido.Id,
+                RevendaId = pedido.RevendaId,
+                DataCriacao = pedido.DataCriacao,
+                Itens = pedido.Itens.Select(i => new ItemPedidoFilaDTO
+                {
+                    ProdutoId = i.ProdutoId,
+                    Quantidade = i.Quantidade
+                }).ToList()
+            };
+        }
     }
 }

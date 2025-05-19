@@ -1,6 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using RevendaPedidos.Domain.Entities;
 using RevendaPedidos.Domain.Interfaces;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace RevendaPedidos.Infra.Repositories
 {
@@ -22,7 +26,7 @@ namespace RevendaPedidos.Infra.Repositories
         public async Task<IEnumerable<Pedido>> ListarPorRevendaAsync(Guid revendaId)
         {
             return await _context.Pedidos
-                .Include(p => p.Itens)
+                .Include("_itens")
                 .Where(p => p.RevendaId == revendaId)
                 .OrderByDescending(p => p.DataCriacao)
                 .ToListAsync();
@@ -31,14 +35,14 @@ namespace RevendaPedidos.Infra.Repositories
         public async Task<Pedido?> ObterPorIdAsync(Guid revendaId, Guid pedidoId)
         {
             return await _context.Pedidos
-                .Include(p => p.Itens)
+                .Include("_itens")
                 .FirstOrDefaultAsync(p => p.RevendaId == revendaId && p.Id == pedidoId);
         }
 
         public async Task<List<Pedido>> ListarPorIdsAsync(Guid revendaId, List<Guid> pedidoIds)
         {
             return await _context.Pedidos
-                .Include(p => p.Itens)
+                .Include("_itens")
                 .Where(p => p.RevendaId == revendaId && pedidoIds.Contains(p.Id))
                 .ToListAsync();
         }
@@ -47,6 +51,14 @@ namespace RevendaPedidos.Infra.Repositories
         {
             _context.Pedidos.Update(pedido);
             await _context.SaveChangesAsync();
+        }
+
+        public async Task<List<Pedido>> ListarPorStatusAsync(StatusPedido status)
+        {
+            return await _context.Pedidos
+                .Include("_itens")
+                .Where(p => p.Status == status)
+                .ToListAsync();
         }
     }
 }

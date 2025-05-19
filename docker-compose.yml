@@ -10,7 +10,15 @@ services:
       - revenda-net
     volumes:
       - sqlvolume:/var/opt/mssql
- 
+
+ rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      - revenda-net
+
  revendapedidos.api:
     image: ${DOCKER_REGISTRY-}revendapedidosapi
     build:

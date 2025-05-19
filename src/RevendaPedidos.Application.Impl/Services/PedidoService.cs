@@ -2,6 +2,7 @@
 using RevendaPedidos.Application.Interfaces.Services;
 using RevendaPedidos.Domain.Interfaces;
 using RevendaPedidos.Application.Mappers;
+using RevendaPedidos.Domain.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,15 +13,17 @@ namespace RevendaPedidos.Application.Impl.Services
     public class PedidoService : IPedidoService
     {
         private readonly IPedidoRepository _repository;
+        private readonly IFilaProcessarPedidosService _filaProcessarPedidosService;
 
-        public PedidoService(IPedidoRepository repository)
+        public PedidoService(IPedidoRepository repository, IFilaProcessarPedidosService filaProcessarPedidosService)
         {
             _repository = repository;
+            _filaProcessarPedidosService = filaProcessarPedidosService;
         }
 
         public async Task<Guid> RegistrarPedidoAsync(PedidoDTO dto)
         {
-            var entity = dto.Map(); // Mapeia DTO para entidade
+            var entity = dto.Map();
             await _repository.AdicionarAsync(entity);
             return entity.Id;
         }
@@ -41,30 +44,29 @@ namespace RevendaPedidos.Application.Impl.Services
         {
             var pedidos = await _repository.ListarPorIdsAsync(revendaId, pedidoIds);
 
-            // Validar se encontrou todos, se pertencem à revenda
             if (pedidos.Count != pedidoIds.Count)
                 throw new InvalidOperationException("Um ou mais pedidos não encontrados para a revenda.");
 
-            // Valida cada pedido individualmente
             foreach (var pedido in pedidos)
             {
                 if (!pedido.PodeEmitir())
                     throw new InvalidOperationException($"Pedido {pedido.Id} não está apto para emissão.");
             }
 
-            // Verifica soma mínima de itens
             var somaItens = pedidos.Sum(p => p.Itens.Sum(i => i.Quantidade));
             if (somaItens < 1000)
                 throw new InvalidOperationException("A soma das quantidades dos itens deve ser no mínimo 1000.");
 
-            // Atualiza status para 'AguardandoIntegracao'
+            // Enviar para a fila de processamento
             foreach (var pedido in pedidos)
             {
-                pedido.AlterarStatus(Domain.Entities.StatusPedido.AguardandoIntegracao);
+                await _filaProcessarPedidosService.PublicarPedidoAsync(pedido.MapFila());
+
+                pedido.AlterarStatus(StatusPedido.AguardandoIntegracao);
+                
                 await _repository.AtualizarAsync(pedido);
             }
 
-            // Retorna lista de pedidos atualizada
             return pedidos.Select(p => p.Map()).ToList();
         }
     }

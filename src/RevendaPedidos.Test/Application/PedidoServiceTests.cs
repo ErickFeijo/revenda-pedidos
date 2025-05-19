@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Moq;
 using RevendaPedidos.Application.Impl.Services;
+using RevendaPedidos.Application.Interfaces.Services;
 using RevendaPedidos.Domain.Entities;
 using RevendaPedidos.Domain.Interfaces;
 using Xunit;
@@ -12,12 +13,13 @@ namespace RevendaPedidos.Tests.Application
     public class PedidoServiceTests
     {
         private readonly Mock<IPedidoRepository> _repositoryMock;
+        private readonly Mock<IFilaProcessarPedidosService> _filaProcessarPedidosService;
         private readonly PedidoService _service;
 
         public PedidoServiceTests()
         {
             _repositoryMock = new Mock<IPedidoRepository>();
-            _service = new PedidoService(_repositoryMock.Object);
+            _service = new PedidoService(_repositoryMock.Object, _filaProcessarPedidosService.Object);
         }
 
         [Fact]

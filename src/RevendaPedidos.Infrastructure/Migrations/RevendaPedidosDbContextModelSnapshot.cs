@@ -101,7 +101,7 @@ namespace RevendaPedidos.Infrastructure.Migrations
             modelBuilder.Entity("RevendaPedidos.Domain.Entities.ItemPedido", b =>
                 {
                     b.HasOne("RevendaPedidos.Domain.Entities.Pedido", null)
-                        .WithMany("Itens")
+                        .WithMany("_itens")
                         .HasForeignKey("PedidoId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
@@ -134,7 +134,7 @@ namespace RevendaPedidos.Infrastructure.Migrations
 
             modelBuilder.Entity("RevendaPedidos.Domain.Entities.Revenda", b =>
                 {
-                    b.OwnsMany("RevendaPedidos.Domain.Entities.Contato", "Contatos", b1 =>
+                    b.OwnsMany("RevendaPedidos.Domain.Entities.Contato", "_contatos", b1 =>
                         {
                             b1.Property<Guid>("RevendaId")
                                 .HasColumnType("uniqueidentifier");
@@ -153,7 +153,7 @@ namespace RevendaPedidos.Infrastructure.Migrations
                                 .HasForeignKey("RevendaId");
                         });
 
-                    b.OwnsMany("RevendaPedidos.Domain.Entities.EnderecoEntrega", "EnderecosEntrega", b1 =>
+                    b.OwnsMany("RevendaPedidos.Domain.Entities.EnderecoEntrega", "_enderecosEntrega", b1 =>
                         {
                             b1.Property<Guid>("RevendaId")
                                 .HasColumnType("uniqueidentifier");
@@ -193,7 +193,7 @@ namespace RevendaPedidos.Infrastructure.Migrations
                                 .HasForeignKey("RevendaId");
                         });
 
-                    b.OwnsMany("RevendaPedidos.Domain.Entities.Telefone", "Telefones", b1 =>
+                    b.OwnsMany("RevendaPedidos.Domain.Entities.Telefone", "_telefones", b1 =>
                         {
                             b1.Property<Guid>("RevendaId")
                                 .HasColumnType("uniqueidentifier");
@@ -209,16 +209,16 @@ namespace RevendaPedidos.Infrastructure.Migrations
                                 .HasForeignKey("RevendaId");
                         });
 
-                    b.Navigation("Contatos");
+                    b.Navigation("_contatos");
 
-                    b.Navigation("EnderecosEntrega");
+                    b.Navigation("_enderecosEntrega");
 
-                    b.Navigation("Telefones");
+                    b.Navigation("_telefones");
                 });
 
             modelBuilder.Entity("RevendaPedidos.Domain.Entities.Pedido", b =>
                 {
-                    b.Navigation("Itens");
+                    b.Navigation("_itens");
                 });
 #pragma warning restore 612, 618
         }
