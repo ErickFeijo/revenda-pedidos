@@ -43,7 +43,7 @@ O **RevendaPedidos** é um sistema para gerenciamento de revendas, e pedidos par
 - **SQL Server** (persistência)
 - **Docker / Docker Compose**
 - **Swagger/OpenAPI** para documentação
-- **xUnit** ou **NUnit** para testes automatizados
+- **xUnit** para testes automatizados
 
 ---
 
@@ -57,7 +57,7 @@ O **RevendaPedidos** é um sistema para gerenciamento de revendas, e pedidos par
 
 ```bash
 docker-compose up --build
-
+```
 
 Aguarde os containers subirem. Os serviços principais estarão disponíveis:
 
@@ -74,6 +74,8 @@ Aguarde os containers subirem. Os serviços principais estarão disponíveis:
 
 ```bash
 docker-compose down
+```
+
 ---
 
 ## APIs & Documentação
@@ -88,6 +90,7 @@ Para rodar os testes localmente:
 
 ```bash
 dotnet test
+```
 
 ---
 
