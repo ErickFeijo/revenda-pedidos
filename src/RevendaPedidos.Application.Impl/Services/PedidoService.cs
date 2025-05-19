@@ -7,18 +7,19 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using MassTransit;
 
 namespace RevendaPedidos.Application.Impl.Services
 {
     public class PedidoService : IPedidoService
     {
         private readonly IPedidoRepository _repository;
-        private readonly IFilaProcessarPedidosService _filaProcessarPedidosService;
+        private readonly IPedidoFilaPublisher _pedidoFilaPublisher;
 
-        public PedidoService(IPedidoRepository repository, IFilaProcessarPedidosService filaProcessarPedidosService)
+        public PedidoService(IPedidoRepository repository, IPedidoFilaPublisher pedidoFilaPublisher)
         {
             _repository = repository;
-            _filaProcessarPedidosService = filaProcessarPedidosService;
+            _pedidoFilaPublisher = pedidoFilaPublisher;
         }
 
         public async Task<Guid> RegistrarPedidoAsync(PedidoDTO dto)
@@ -60,7 +61,7 @@ namespace RevendaPedidos.Application.Impl.Services
             // Enviar para a fila de processamento
             foreach (var pedido in pedidos)
             {
-                await _filaProcessarPedidosService.PublicarPedidoAsync(pedido.MapFila());
+                await _pedidoFilaPublisher.PublicarPedidoAsync(pedido.MapFila());
 
                 pedido.AlterarStatus(StatusPedido.AguardandoIntegracao);
                 

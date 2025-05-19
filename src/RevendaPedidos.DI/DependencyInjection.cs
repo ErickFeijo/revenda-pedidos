@@ -5,6 +5,7 @@ using RevendaPedidos.Domain.Interfaces;
 using RevendaPedidos.Infra.Repositories;
 using Microsoft.Extensions.Configuration;
 using Microsoft.EntityFrameworkCore;
+using RevendaPedidos.Infra.Messaging;
 
 namespace RevendaPedidos.DI;
 
@@ -16,12 +17,13 @@ public static class DependencyInjection
         services.AddScoped<IRevendaService, RevendaService>();
         services.AddScoped<IPedidoService, PedidoService>();
         services.AddScoped<IPedidoIntegracaoService, PedidoIntegracaoService>();
-        services.AddScoped<IFilaProcessarPedidosService, FilaProcessarPedidosService>();
         services.AddScoped<IIntegradorFornecedorService, IntegradorFornecedorMockService>();
 
         // Infra repositories
         services.AddScoped<IRevendaRepository, RevendaRepository>();
         services.AddScoped<IPedidoRepository, PedidoRepository>();
+
+        services.AddScoped<IPedidoFilaPublisher, PedidoFilaPublisher>();
 
         // DbContext
         services.AddDbContext<RevendaPedidosDbContext>(options =>

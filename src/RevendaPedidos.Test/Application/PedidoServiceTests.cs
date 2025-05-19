@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using MassTransit;
 using Moq;
 using RevendaPedidos.Application.Impl.Services;
 using RevendaPedidos.Application.Interfaces.Services;
@@ -13,13 +14,14 @@ namespace RevendaPedidos.Tests.Application
     public class PedidoServiceTests
     {
         private readonly Mock<IPedidoRepository> _repositoryMock;
-        private readonly Mock<IFilaProcessarPedidosService> _filaProcessarPedidosService;
+        private readonly Mock<IPedidoFilaPublisher> _pedidoFilaPublisher;
         private readonly PedidoService _service;
 
         public PedidoServiceTests()
         {
             _repositoryMock = new Mock<IPedidoRepository>();
-            _service = new PedidoService(_repositoryMock.Object, _filaProcessarPedidosService.Object);
+            _pedidoFilaPublisher = new Mock<IPedidoFilaPublisher>();
+            _service = new PedidoService(_repositoryMock.Object, _pedidoFilaPublisher.Object);
         }
 
         [Fact]
