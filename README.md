@@ -115,5 +115,20 @@ dotnet test
 - **/tests/RevendaPedidos.Test**  
   Testes automatizados (unitários e de integração).
 
+---
+
+## Melhorias Previstas
+
+- **Padrão unificado de retorno de erros:**  
+  Implementação de um padrão consistente para respostas de erro em todas as APIs, garantindo que mensagens sejam estruturadas e que cada cenário retorne o HTTP Status apropriado  
+  (ex: `400 Bad Request`, `404 Not Found`, `409 Conflict`, `500 Internal Server Error`). Isso facilitará a integração de frontends e o troubleshooting de integrações externas.
+
+- **Refatoração do método `EmitirPedido`:**  
+  Separação do método responsável pela emissão de pedidos para uma nova classe específica, promovendo o princípio de responsabilidade única (SRP) e tornando o código da `PedidoService` mais limpo, testável e de fácil manutenção.
+
+- **Gravação de logs:**  
+  Implementação de logging detalhado em pontos críticos do sistema, utilizando práticas recomendadas de log estruturado. Esses logs facilitarão a auditoria, rastreabilidade de erros e análise de eventos operacionais.
+
+---
 
 
